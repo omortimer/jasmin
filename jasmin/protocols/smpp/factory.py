@@ -132,8 +132,8 @@ class SMPPClientFactory(ClientFactory):
             self.log.info('Establishing SSL connection to %s:%d', self.config.host, self.config.port)
             reactor.connectSSL(self.config.host, self.config.port, self, CtxFactory(self.config))
         else:
-            self.log.info('Establishing TCP connection to %s:%d', self.config.host, self.config.port)
-            reactor.connectTCP(self.config.host, self.config.port, self)
+            self.log.info('Establishing TCP connection to %s:%d from %s', self.config.host, self.config.port,self.config.bind_addr)
+            reactor.connectTCP(self.config.host, self.config.port, self,bindAddress=(self.config.bind_addr,0))
 
         self.exitDeferred = defer.Deferred()
         self.connectDeferred = defer.Deferred()

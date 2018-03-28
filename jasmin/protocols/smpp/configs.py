@@ -106,6 +106,11 @@ class SMPPClientConfig(object):
             raise TypeMismatch('password is longer than allowed size (8)')
         self.systemType = kwargs.get('systemType', '')
 
+        #####################
+        # SMPPClient bind address
+        self.bind_addr = kwargs.get('bind_addr', None)
+        
+
         # Reconnection
         self.reconnectOnConnectionLoss = kwargs.get('reconnectOnConnectionLoss', True)
         if not isinstance(self.reconnectOnConnectionLoss, bool):
