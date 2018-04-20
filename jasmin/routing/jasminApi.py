@@ -362,7 +362,8 @@ class HttpConnector(Connector):
         Connector.__init__(self, cid)
         self.baseurl = baseurl
         self.method = method
-
+#        self.bind_addr = bind_addr
+        
         self._repr = '<%s (cid=%s, baseurl=%s, method=%s)>' % (
             self.__class__.__name__,
             self.cid,

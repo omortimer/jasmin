@@ -289,7 +289,8 @@ class deliverSmThrower(Thrower):
                 # Throw the message to http endpoint
                 encodedArgs = urllib.urlencode(args)
                 postdata = None
-                origin=None
+#                origin = dc.bind_addr
+                origin = None
                 baseurl = dc.baseurl
                 _method = dc.method.upper()
                 if _method == 'GET':
@@ -298,18 +299,18 @@ class deliverSmThrower(Thrower):
                     postdata = encodedArgs
 
                 self.log.debug('Calling %s with args %s using %s method.', dc.baseurl, args, _method)
-#                content = yield getPage(
-#                    baseurl,
-#                    method=_method,
-#                    postdata=postdata,
-#                    timeout=self.config.timeout,
-#                    agent='Jasmin gateway/1.0 deliverSmHttpThrower',
-#                    headers={'Content-Type': 'application/x-www-form-urlencoded',
-#                             'Accept': 'text/plain'})
-                req = urllib2.Request(baseurl,data=postdata,headers={'Content-Type': 'application/x-www-form-urlencoded',
-                             'Accept': 'text/plain'},origin_req_host=origin)
+                content = yield getPage(
+                    baseurl,
+                    method=_method,
+                    postdata=postdata,
+                    timeout=self.config.timeout,
+                    agent='Jasmin gateway/1.0 deliverSmHttpThrower',
+                    headers={'Content-Type': 'application/x-www-form-urlencoded',
+                             'Accept': 'text/plain'})
+#                req = urllib2.Request(baseurl,data=postdata,headers={'Content-Type': 'application/x-www-form-urlencoded',
+#                             'Accept': 'text/plain'},origin_req_host=origin)
                 
-                content = yield urllib2.urlopen(req).read()
+#                content = yield urllib2.urlopen(req).read()
                                                                            
                 self.log.info('Throwed message [msgid:%s] to connector (%s %s/%s)[cid:%s] using http to %s.',
                               msgid, route_type, counter, len(dcs), dc.cid, dc.baseurl)
