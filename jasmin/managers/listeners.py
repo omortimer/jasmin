@@ -576,6 +576,14 @@ class SMPPClientSMListener(object):
                     self.log.info(
                         'Interceptor script returned %s smpp_status error.', args[0]['smpp_status'])
                     raise DeliverSmInterceptionError(code=args[0]['smpp_status'])
+                elif isinstance(args[0], dict) and args[0]['smpp_status'] == 0:
+                    smpp.factory.stats.inc('interceptor_count')
+                    self.log.info('Interceptor script returned %s success smpp_status.', args[0]['smpp_status'])
+                    # Do we have a message_id returned from interceptor ?
+                    if 'message_id' in args[0]['extra']:
+                        message_id = str(args[0]['extra']['message_id'])
+                    raise SubmitSmInterceptionSuccess()
+
                 elif isinstance(args[0], str):
                     smpp.factory.stats.inc('interceptor_count')
                     routable = pickle.loads(args[0])
@@ -715,6 +723,9 @@ class SMPPClientSMListener(object):
 
             # Known exception handling
             defer.returnValue(DataHandlerResponse(status=e.status))
+        except (SubmitSmInterceptionSuccess) as e:
+            # Known exception handling
+            defer.returnValue(DataHandlerResponse(status=0))
         except Exception as e:
             # Unknown exception handling
             self.log.critical('Got an unknown exception (%s): %s', type(e), e)
