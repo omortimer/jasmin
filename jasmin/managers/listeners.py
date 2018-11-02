@@ -725,7 +725,7 @@ class SMPPClientSMListener(object):
             defer.returnValue(DataHandlerResponse(status=e.status))
         except (SubmitSmInterceptionSuccess) as e:
             # Known exception handling
-            defer.returnValue(DataHandlerResponse(status=0))
+            defer.returnValue(DataHandlerResponse(status=CommandStatus.ESME_ROK))
         except Exception as e:
             # Unknown exception handling
             self.log.critical('Got an unknown exception (%s): %s', type(e), e)
