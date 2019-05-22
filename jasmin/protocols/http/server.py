@@ -14,7 +14,7 @@ from jasmin.protocols.http.errors import UrlArgsValidationError
 from jasmin.protocols.smpp.operations import SMPPOperationFactory, gsm_encode
 from jasmin.routing.Routables import RoutableSubmitSm
 from jasmin.vendor.smpp.pdu.constants import priority_flag_value_map
-from jasmin.vendor.smpp.pdu.pdu_types import RegisteredDeliveryReceipt, RegisteredDelivery
+from jasmin.vendor.smpp.pdu.pdu_types import RegisteredDeliveryReceipt, RegisteredDelivery,EsmClass,EsmClassType,Subaddress,SubaddressTypeTag
 from jasmin.protocols.smpp.configs import SMPPClientConfig
 from jasmin.vendor.smpp.pdu.smpp_time import parse
 from .errors import (AuthenticationError, ServerError, RouteNotFoundError, ConnectorNotFoundError,
@@ -138,7 +138,9 @@ class Send(Resource):
                 destination_addr=updated_request.args['to'][0],
                 short_message=short_message,
                 data_coding=int(updated_request.args['coding'][0]),
-                custom_tlvs=updated_request.args['custom_tlvs'][0])
+                custom_tlvs=updated_request.args['custom_tlvs'][0],
+                esm_class=EsmClass(updated_request.args['esm_class'][0], EsmClassType.DEFAULT),
+                )
             self.log.debug("Built base SubmitSmPDU: %s", SubmitSmPDU)
 
             # Make Credential validation
@@ -449,6 +451,7 @@ class Send(Resource):
                       'dlr-level'   : {'optional': True, 'pattern': re.compile(r'^[1-3]$')},
                       'dlr-method'  : {'optional': True, 'pattern': re.compile(r'^(get|post)$', re.IGNORECASE)},
                       'tags'        : {'optional': True, 'pattern': re.compile(r'^([-a-zA-Z0-9,])*$')},
+                      'esm_class'   : {'optional': True},
                       'content'     : {'optional': True},
                       'hex-content' : {'optional': True},
                       'custom_tlvs' : {'optional': True}}
@@ -470,6 +473,10 @@ class Send(Resource):
             # Default coding is 0 when not provided
             if 'coding' not in updated_request.args:
                 updated_request.args['coding'] = ['0']
+
+            # Default esm_class is 0x03 when not provided
+            if 'esm_class' not in updated_request.args:
+                updated_request.args['esm_class'] = [0x03]
 
             # Set default for undefined updated_request.arguments
             if 'dlr-url' in updated_request.args or 'dlr-level' in updated_request.args:

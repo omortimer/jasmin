@@ -24,7 +24,7 @@ import struct
 from jasmin.vendor.smpp.pdu import constants, pdu_types, operations
 from jasmin.vendor.smpp.pdu import smpp_time
 from jasmin.vendor.smpp.pdu.error import PDUParseError, PDUCorruptError
-from jasmin.vendor.smpp.pdu.pdu_types import CommandId
+from jasmin.vendor.smpp.pdu.pdu_types import CommandId,Subaddress,SubaddressTypeTag
 
 
 # Jasmin update:
@@ -1137,6 +1137,8 @@ class PDUEncoder(IEncoder):
                 encoded_value = OctetStringEncoder().encode(value)
             elif value_type == 'COctetString':
                 encoded_value = COctetStringEncoder().encode(value)
+            elif value_type == 'Custom':
+                encoded_value = "\xA0" + COctetStringEncoder().encode(value)
             else:
                 continue  # Unknown tlv
 
